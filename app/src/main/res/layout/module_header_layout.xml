@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorPrimary">
+
+    <Button
+        android:layout_width="28dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_centerVertical="true"
+        android:background="@drawable/list" />
+
+    <Button
+        android:id="@+id/btn_musicCloud"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/music_cloud"
+        android:backgroundTintMode="multiply"
+        android:backgroundTint="@color/iconHighLight"/>
+
+    <Button
+        android:id="@+id/btn_music"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_toLeftOf="@+id/btn_musicCloud"
+        android:layout_toStartOf="@+id/btn_musicCloud"
+        android:background="@drawable/music"
+         android:layout_centerVertical="true"
+        android:layout_marginEnd="22dp"
+        android:layout_marginRight="22dp"
+        android:backgroundTint="@color/iconHighLight"
+        android:backgroundTintMode="multiply"/>
+
+    <Button
+        android:id="@+id/btn_video"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/video"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@+id/btn_musicCloud"
+        android:layout_toRightOf="@+id/btn_musicCloud"
+        android:backgroundTint="@color/iconHighLight"
+        android:backgroundTintMode="multiply" />
+
+    <Button
+        android:id="@+id/btn_search"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/search" />
+</RelativeLayout>

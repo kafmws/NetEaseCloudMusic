@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="25dp"
+    android:background="@color/RVLableGray">
+
+    <ImageButton
+        android:id="@+id/ib_icon"
+        android:scaleType="fitCenter"
+        android:src="@drawable/turn_arrow"
+        android:background="@color/RVLableGray"
+        android:layout_marginLeft="10dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginStart="10dp"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:text="创建的歌单"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/ib_icon"
+        android:layout_toEndOf="@+id/ib_icon" />
+
+    <ImageButton
+        android:id="@+id/ib_setup"
+        android:scaleType="fitCenter"
+        android:src="@drawable/setup"
+        android:background="@color/RVLableGray"
+        android:layout_width="17dp"
+        android:layout_height="17dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp" />
+
+</RelativeLayout>
