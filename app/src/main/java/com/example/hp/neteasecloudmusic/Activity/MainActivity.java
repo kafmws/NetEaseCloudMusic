@@ -1,7 +1,10 @@
 package com.example.hp.neteasecloudmusic.Activity;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
@@ -11,9 +14,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,11 +31,18 @@ import com.example.hp.neteasecloudmusic.Adapter.ViewPagerAdapter;
 import com.example.hp.neteasecloudmusic.Data.SongBySearchData;
 import com.example.hp.neteasecloudmusic.R;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private DrawerLayout drawerLayout;
 
     private Button btn_music;
     private Button btn_musicCloud;
@@ -55,8 +69,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.module_main_activity);
 
+        drawerLayout  = findViewById(R.id.dl_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+
 //        intiStaticRVMusicLists();
-        intiFragmentList();
+        initialize();
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(),fragmentList);
         viewPager = findViewById(R.id.vp_main);
         viewPager.setAdapter(viewPagerAdapter);
@@ -85,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_search = findViewById(R.id.btn_search);
         btn_play = findViewById(R.id.btn_play);
         btn_playList = findViewById(R.id.btn_playList);
+        btn_list = findViewById(R.id.btn_list);
         iv_album_pic = findViewById(R.id.iv_album_pic);
         tv_song_name = findViewById(R.id.tv_song_name);
         tv_singer_name = findViewById(R.id.tv_singer_name);
@@ -95,11 +117,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_search.setOnClickListener(this);
         btn_play.setOnClickListener(this);
         btn_playList.setOnClickListener(this);
+        btn_list.setOnClickListener(this);
 
         highLightButton(btn_music);
 
         Fragment currentFragment = viewPagerAdapter.getCurrentFragment();
         Log.e("MainActivity",currentFragment==null?"得到当前fragment为空":currentFragment.toString());
+        if(song!=null){
+            tv_song_name.setText(song.getName());
+            tv_singer_name.setText(song.getSinger());
+            Glide.with(this).load(song.getPic()).into(iv_album_pic);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -117,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_search:
                 startActivityForResult(new Intent(this,SearchActivity.class), 0);
+                break;
+            case R.id.btn_list:
+                drawerLayout.openDrawer(Gravity.START);
                 break;
         }
 
@@ -139,17 +170,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    protected void onDestroy() {
-        if(player!=null){
+    protected void onStop() {
+        super.onStop();
+        saveCurrentSong();
+        if (player != null) {
             player.release();
             player = null;
         }
-        super.onDestroy();
     }
 
 ////////////////////function
 
+
+    private void saveCurrentSong(){
+        if(song == null)
+            return;
+        SharedPreferences.Editor editor = getSharedPreferences("Song",MODE_PRIVATE).edit();
+        String text = null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(song);
+            text = new String(Base64.encode(baos.toByteArray(), Base64.DEFAULT));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        editor.putString("Song",text);
+        editor.apply();
+    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -175,12 +225,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void changePlayerStatus() {
+        if(player == null)
+            initMediaPlayer(Uri.parse(song.getUrl()));
         if (player.isPlaying()) {
 //            player.stop();
             player.pause();
+            btn_play.setBackgroundResource(R.drawable.play);
+            tv_song_name.setEllipsize(TextUtils.TruncateAt.END);
         } else {
             player.start();
+            btn_play.setBackgroundResource(R.drawable.pause);
+            tv_song_name.setEllipsize(TextUtils.TruncateAt.MARQUEE);
 //            player.prepareAsync();
         }
     }
@@ -217,7 +275,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .build());
-        player.setOnPreparedListener(mp -> mp.start());
+        player.setOnPreparedListener(mp -> {
+            mp.start();
+            btn_play.setBackgroundResource(R.drawable.pause);
+        });
         player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -234,5 +295,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fragmentList.add(MusicFragment.newInstance());
         fragmentList.add(TestFragment.newInstance("laji"));
         fragmentList.add(TestFragment.newInstance("video"));
+    }
+
+
+    private void initialize() {
+        intiFragmentList();
+        String text = getSharedPreferences("Song",MODE_PRIVATE).getString("Song",null);
+        if(text!=null){
+            ByteArrayInputStream bis = new ByteArrayInputStream(android.util.Base64.decode(text,Base64.NO_PADDING));
+            try {
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                song = (SongBySearchData.Song) ois.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

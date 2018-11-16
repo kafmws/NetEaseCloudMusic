@@ -50,14 +50,11 @@ public class RVSearchAdapter extends RecyclerView.Adapter<RVSearchAdapter.ViewHo
         viewHolder.iv_moreInfo.setOnClickListener((view)->{
             Toast.makeText(activity,"okk",Toast.LENGTH_SHORT).show();
         });
-        viewHolder.layout_song_item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent();
-                intent.putExtra("returnSongData", songs.get(position));
-                activity.setResult(Activity.RESULT_OK,intent);
-                activity.finish();
-            }
+        viewHolder.layout_song_item.setOnClickListener(v -> {
+            Intent intent= new Intent();
+            intent.putExtra("returnSongData", songs.get(position));
+            activity.setResult(Activity.RESULT_OK,intent);
+            activity.finish();
         });
     }
 

@@ -20,14 +20,20 @@
         android:text="三角志"
         android:textSize="14sp"
         android:textColor="@color/black"
-        android:layout_width="match_parent"
+        android:layout_width="210dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
-        android:maxLines="1"
         android:layout_toEndOf="@+id/iv_album_pic"
-        android:layout_toRightOf="@+id/iv_album_pic" />
+        android:layout_toRightOf="@+id/iv_album_pic"
+
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true" />
 
     <TextView
         android:id="@+id/tv_singer_name"
@@ -60,8 +66,8 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="20sp"
-        android:layout_marginRight="20sp"
+        android:layout_marginEnd="15sp"
+        android:layout_marginRight="15sp"
         android:layout_toLeftOf="@id/btn_playList"
         android:layout_toStartOf="@id/btn_playList"
         android:background="@drawable/play" />

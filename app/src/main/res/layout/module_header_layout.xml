@@ -6,6 +6,7 @@
     android:background="@color/colorPrimary">
 
     <Button
+        android:id="@+id/btn_list"
         android:layout_width="28dp"
         android:layout_height="25dp"
         android:layout_marginLeft="10dp"
